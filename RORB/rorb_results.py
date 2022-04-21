@@ -1,7 +1,7 @@
 """
 Author: Tom Norman
 
-The script reads the results from a RORB model and plots an ensemble and line of AEP vs Duration. This script provides a convenient way have visualising the results to determine the citical storm duration for each AEP.
+The script reads the results from a RORB model and plots an ensemble and line of AEP vs Duration. This script provides a convenient way of visualising the results to determine the citical storm duration for each AEP.
 The script will handle mutliple AEP within the same '_batch.out' file, so a single RORB model can be run for multiple AEPs. 
 The script is to be placed in the '../_output' RORB file.
 
