@@ -1,5 +1,5 @@
 import math
-from qgis2rorb.core.gis.point import Point
+from qgis2rorb.core.geometry.point import Point
 
 def length(vertices:list):
     length = 0

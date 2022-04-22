@@ -5,7 +5,7 @@ class Line():
     def __init__(self, vector:list = []):
         super().__init__()
         self._vector = pointVector(vector)
-        self._end = len(self._vector)
+        self._end = len(self._vector) - 1
         self._length = geometry.length(self.toVector())
 
     def __iter__(self):
@@ -13,7 +13,7 @@ class Line():
         return self
     
     def __next__(self) -> Point:
-        if self.n < self._end:
+        if self.n <= self._end:
             point = self._vector[self.n]
             self.n += 1
             return point
@@ -39,6 +39,12 @@ class Line():
 
     def toVector(self) -> list:
         return self._vector
+
+    def getStart(self) -> Point:
+        return self._vector[0]
+    
+    def getEnd(self) -> Point:
+        return self._vector[self._end]
 
 def pointVector(vector:list):
     points = []
