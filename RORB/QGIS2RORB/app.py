@@ -1,4 +1,6 @@
 from cProfile import label
+
+import numpy as np
 from qgis2rorb.core.attributes.reach import Reach
 from qgis2rorb.core.attributes.basin import Basin
 from qgis2rorb.core.attributes.confluence import Confluence
@@ -9,64 +11,65 @@ import matplotlib.pyplot as plt
 from qgis2rorb.math import geometry
 
 def main():
-    #Dummy catchment. This is after the GIS shape files have been parsed and have spit out the data
-    confluences = [Confluence('1', 0.0, 0.0, True), \
-        Confluence('2', 1.0, 1.0), \
-        Confluence('3', 2.0, 1.0)]
-    basins = [Basin('A', 2.0, 2.0, 0.5, 0.0), \
-        Basin('B', 3.0, 2.0, 0.35, 0.1), \
-        Basin('C', 3.0, 1.0, 1.0, 0.0), \
-        Basin('D', 4.0, 1.2), \
-        Basin('E', 4.2, 1.0), \
-        Basin('F', 3.5, 1.5), \
-        Basin('G', 3.2, 2.5)]
-    reaches = [Reach('1-2', [(0.0,0.0), (1.0,1.0,)], 1, 0), \
-        Reach('2-A', [(1.0,1.0),(2.0,2.0)], 1, 0), \
-        Reach('2-3', [(2.0,1.0),(1.0,1.0)], 1, 0), \
-        Reach('3-B', [(3.0,2.0),(2.0,1.0)], 1, 0), \
-        Reach('3-C', [(3.0,1.0),(2.5,0.5),(2.0,1.0)], 1, 0), \
-        Reach('C-D', [(3.0, 1.0),(4.0, 1.2)], 1, 0), \
-        Reach('B-G', [(3.0, 2.0),(3.2, 2.5)], 1, 0), \
-        Reach('C-E', [(3.0, 1.0),(4.2, 1.0)], 1, 0), \
-        Reach('C-F', [(3.0, 1.0),(3.5, 1.5)], 1, 0)]
+    path = 'C:\\Users\\toman\\Documents\\Code\\Hydrology\\RORB\\QGIS2RORB\\data'
+    builder = Builder(path + '\\test_reach.shp', path + '\\test_basin.shp', path + '\\test_centroid.shp', path + '\\test_confluence.shp')
+    tr = builder.reach()
+    tc = builder.confluence()
+    tb = builder.basin()
+    
+    catchment = Catchment(tc, tb, tr)
+    connected = catchment.connect()
 
-    #Plot the data to make sure it is correct.
+
+        #Plot the data to make sure it is correct.
     cx = []
     cy = []
-    for c in confluences:
+    for c in tc:
         cx.append(c.coordinates()[0])
         cy.append(c.coordinates()[1])
     
     bx = []
     by = []
-    for b in basins:
+    for b in tb:
         bx.append(b.coordinates()[0])
         by.append(b.coordinates()[1])
 
 
-    for r in reaches:
+    for r in tr:
         x = []
         y = []
         for p in r:
             x.append(p.coordinates()[0])
             y.append(p.coordinates()[1])
-        plt.scatter(x, y, label=r.getName())
-        plt.plot(x, y)
+        plt.plot(x, y, label=r.getName())
 
     plt.scatter(cx, cy)
     plt.scatter(bx, by)
     plt.legend(loc="upper left")
     #plt.show()
 
-    catchment = Catchment(confluences, basins, reaches)
-    #print(catchment.connect())
+    reachNames = [r.getName() for r in tr]
+    nodeNames = []
+    for i, n in enumerate(tc):
+        nodeNames.append("{}[{}]".format(n.getName(), i))
+            
+    for i, b in enumerate(tb):
+        nodeNames.append("{}[{}]".format(b.getName(), i+12))
 
-    path = 'C:\\Users\\toman\\Documents\\Code\\Hydrology\\RORB\\QGIS2RORB\\data'
-    builder = Builder(path + '\\test_reach.shp', path + '\\test_basin.shp', path + '\\test_centroid.shp', path + '\\test_confluence.shp')
-    tr = builder.reach()
-    tc = builder.confluence()
-    tb = builder.basin()
-    print(tb[2])
+    fig, ax = plt.subplots()
+    im = ax.imshow(connected)
+    ax.set_xticks(np.arange(0, len(reachNames)))
+    ax.set_xticklabels(labels=reachNames)
+    ax.set_yticks(np.arange(0, len(nodeNames)))
+    ax.set_yticklabels(nodeNames)
+
+    for i in range(len(nodeNames)):
+        for j in range(len(reachNames)):
+            text = ax.text(j, i, connected[i, j], ha='center', va='center', color='w')
+
+    ax.set_title('Catchment Incidence Matrix')
+    fig.tight_layout()
+    plt.show()
 
 
 if (__name__ == "__main__"):

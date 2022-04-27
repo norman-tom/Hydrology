@@ -51,6 +51,6 @@ class Builder():
             s = self._shapeConfluence.shape(i)
             p = s.points[0]
             r = self._shapeConfluence.record(i)
-            confluence.append(Confluence(r['id'], p[0], p[1]))
+            confluence.append(Confluence(r['id'], p[0], p[1],  bool(r['out'])))
         
         return confluence
