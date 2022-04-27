@@ -13,6 +13,9 @@ class Reach(Line):
         Direction can be inferred from the graph and their relation to the 'out' node.
         """
     
+    def __str__(self) -> str:
+        return "Name: {}\nLength: {}\nType: {}\nSlope: {}".format(self._name, round(self.length(), 3), self._type, self._slope)
+    
     def setName(self, name: str):
         self._name = name
     

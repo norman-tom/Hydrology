@@ -7,6 +7,10 @@ class Confluence(Node):
         """
         Identify if this confluence is the out node, which is the last node in the graph. 
         """
+    
+    def __str__(self):
+        return "Name: {}\n[{}, {}]\n{}".format(self._name, round(self._x, 3), round(self._y, 3), self._isOut)
+
     def setOut(self):
         """
         Identify that this confluence is the last node in the graph.

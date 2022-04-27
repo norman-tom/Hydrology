@@ -3,7 +3,10 @@ from qgis2rorb.core.attributes.reach import Reach
 from qgis2rorb.core.attributes.basin import Basin
 from qgis2rorb.core.attributes.confluence import Confluence
 from qgis2rorb.core.graph.catchment import Catchment
+from qgis2rorb.core.gis.builder import Builder
 import matplotlib.pyplot as plt
+
+from qgis2rorb.math import geometry
 
 def main():
     #Dummy catchment. This is after the GIS shape files have been parsed and have spit out the data
@@ -53,10 +56,17 @@ def main():
     plt.scatter(cx, cy)
     plt.scatter(bx, by)
     plt.legend(loc="upper left")
-    plt.show()
+    #plt.show()
 
     catchment = Catchment(confluences, basins, reaches)
-    print(catchment.connect())
+    #print(catchment.connect())
+
+    path = 'C:\\Users\\toman\\Documents\\Code\\Hydrology\\RORB\\QGIS2RORB\\data'
+    builder = Builder(path + '\\test_reach.shp', path + '\\test_basin.shp', path + '\\test_centroid.shp', path + '\\test_confluence.shp')
+    tr = builder.reach()
+    tc = builder.confluence()
+    tb = builder.basin()
+    print(tb[2])
 
 
 if (__name__ == "__main__"):

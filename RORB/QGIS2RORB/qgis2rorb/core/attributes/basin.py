@@ -6,6 +6,9 @@ class Basin(Node):
         self._area: float = km2
         self._fi: float = fi
 
+    def __str__(self):
+        return "Name: {}\n[{}, {}]\nArea: {}".format(self._name, self._x, self._y, self._area)    
+    
     def setArea(self, km2):
         self._area = km2
     
