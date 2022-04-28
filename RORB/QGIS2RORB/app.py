@@ -46,7 +46,6 @@ def main():
     plt.scatter(cx, cy)
     plt.scatter(bx, by)
     plt.legend(loc="upper left")
-    #plt.show()
 
     reachNames = [r.getName() for r in tr]
     nodeNames = []
@@ -57,7 +56,7 @@ def main():
         nodeNames.append("{}[{}]".format(b.getName(), i+12))
 
     fig, ax = plt.subplots()
-    im = ax.imshow(connected)
+    im = ax.imshow(connected[0])
     ax.set_xticks(np.arange(0, len(reachNames)))
     ax.set_xticklabels(labels=reachNames)
     ax.set_yticks(np.arange(0, len(nodeNames)))
@@ -65,10 +64,25 @@ def main():
 
     for i in range(len(nodeNames)):
         for j in range(len(reachNames)):
-            text = ax.text(j, i, connected[i, j], ha='center', va='center', color='w')
+            text = ax.text(j, i, connected[0][i, j], ha='center', va='center', color='w')
 
-    ax.set_title('Catchment Incidence Matrix')
+    ax.set_title('Catchment Incidence Matrix (DS)')
     fig.tight_layout()
+
+    fig, ax = plt.subplots()
+    im = ax.imshow(connected[1])
+    ax.set_xticks(np.arange(0, len(reachNames)))
+    ax.set_xticklabels(labels=reachNames)
+    ax.set_yticks(np.arange(0, len(nodeNames)))
+    ax.set_yticklabels(nodeNames)
+
+    for i in range(len(nodeNames)):
+        for j in range(len(reachNames)):
+            text = ax.text(j, i, connected[1][i, j], ha='center', va='center', color='w')
+
+    ax.set_title('Catchment Incidence Matrix (US)')
+    fig.tight_layout()
+
     plt.show()
 
 

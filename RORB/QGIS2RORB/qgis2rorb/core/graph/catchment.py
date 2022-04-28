@@ -17,10 +17,11 @@ class Catchment:
         self._confluences: list[Confluence] = confluences
         self._basins: list[Basin] = basins
         self._edges: list[Reach] = reaches
-        self._incidenceMatrix = np.zeros((len(self._confluences) + len(self._basins), len(self._edges)))
+        self._incidenceMatrixDS = np.zeros((len(self._confluences) + len(self._basins), len(self._edges)))
+        self._incidenceMatrixUS = np.zeros((len(self._confluences) + len(self._basins), len(self._edges)))
         self._out = 0
 
-    def connect(self):
+    def connect(self) -> tuple:
         """
         Determine which nodes are connected to which reaches.
         Uses nearest neighbour, k = 1
@@ -67,8 +68,9 @@ class Catchment:
         Think about I as relating upstream nodes (m) to downstream nodes (m n) through reach (n) 
         (m n) of -1 indicates no downstream node for relationship m n
         """
-        __newIncidence = np.zeros((len(__vertices), len(self._edges)))
-        __newIncidence.fill(-1)
+        __newIncidenceDS = np.zeros((len(__vertices), len(self._edges)))
+        __newIncidenceDS.fill(-1)
+        __newIncidenceUS = __newIncidenceDS.copy()
         __queue = []
         __colour = np.zeros((len(__vertices), len(self._edges)))
         i = self._out
@@ -97,7 +99,9 @@ class Catchment:
                     if __colour[idxi][idxj] == 0:
                         __colour[idxi][idxj] = 1
                         __queue.append((idxi, idxj))
-                        __newIncidence[idxi][idxj] = u[0]
+                        __newIncidenceUS[u[0]][u[1]] = idxi
+                        __newIncidenceDS[idxi][idxj] = u[0]
                 i += 1
-        self._incidenceMatrix = __newIncidence.copy()
-        return self._incidenceMatrix
+        self._incidenceMatrixDS = __newIncidenceDS.copy()
+        self._incidenceMatrixUS = __newIncidenceUS.copy()
+        return (self._incidenceMatrixDS, self._incidenceMatrixUS)
