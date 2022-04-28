@@ -7,6 +7,7 @@ from qgis2rorb.core.attributes.confluence import Confluence
 from qgis2rorb.core.graph.catchment import Catchment
 from qgis2rorb.core.gis.builder import Builder
 import matplotlib.pyplot as plt
+from qgis2rorb.core.model.controlvector import Traveller
 
 from qgis2rorb.math import geometry
 
@@ -83,7 +84,15 @@ def main():
     ax.set_title('Catchment Incidence Matrix (US)')
     fig.tight_layout()
 
-    plt.show()
+    #plt.show()
+
+    traveller = Traveller(catchment)
+    
+    traveller.setPos(1)
+
+    while(p != -1):
+        p = traveller.next()
+        print(p)
 
 
 if (__name__ == "__main__"):

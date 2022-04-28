@@ -17,9 +17,10 @@ class Catchment:
         self._confluences: list[Confluence] = confluences
         self._basins: list[Basin] = basins
         self._edges: list[Reach] = reaches
-        self._incidenceMatrixDS = np.zeros((len(self._confluences) + len(self._basins), len(self._edges)))
-        self._incidenceMatrixUS = np.zeros((len(self._confluences) + len(self._basins), len(self._edges)))
+        self._incidenceMatrixDS = []
+        self._incidenceMatrixUS = []
         self._out = 0
+        self._endSentinel = -1
 
     def connect(self) -> tuple:
         """
@@ -30,7 +31,7 @@ class Catchment:
         not connected = 0
         """
         __vertices = self._confluences + self._basins 
-        __connectionMatrix = np.zeros((len(self._confluences) + len(self._basins), len(self._edges)))
+        __connectionMatrix = np.zeros((len(self._confluences) + len(self._basins), len(self._edges)), dtype=int)
         for i, edge in enumerate(self._edges):
             s = edge.getStart()
             e = edge.getEnd()
@@ -68,8 +69,8 @@ class Catchment:
         Think about I as relating upstream nodes (m) to downstream nodes (m n) through reach (n) 
         (m n) of -1 indicates no downstream node for relationship m n
         """
-        __newIncidenceDS = np.zeros((len(__vertices), len(self._edges)))
-        __newIncidenceDS.fill(-1)
+        __newIncidenceDS = np.zeros((len(__vertices), len(self._edges)), dtype=int)
+        __newIncidenceDS.fill(self._endSentinel)
         __newIncidenceUS = __newIncidenceDS.copy()
         __queue = []
         __colour = np.zeros((len(__vertices), len(self._edges)))
@@ -104,4 +105,5 @@ class Catchment:
                 i += 1
         self._incidenceMatrixDS = __newIncidenceDS.copy()
         self._incidenceMatrixUS = __newIncidenceUS.copy()
+        
         return (self._incidenceMatrixDS, self._incidenceMatrixUS)
