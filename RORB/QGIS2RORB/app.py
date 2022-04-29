@@ -87,12 +87,8 @@ def main():
     #plt.show()
 
     traveller = Traveller(catchment)
-    
-    traveller.setPos(1)
 
-    while(p != -1):
-        p = traveller.next()
-        print(p)
+    print(traveller.getVector())
 
 
 if (__name__ == "__main__"):

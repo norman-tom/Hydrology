@@ -18,7 +18,7 @@ class Builder():
         for i in range(len(self._shapeReach)):
             s = self._shapeReach.shape(i)
             r = self._shapeReach.record(i)
-            reaches.append(Reach(r['id'], s.points, 0, 0))
+            reaches.append(Reach(r['id'], s.points, r['t'], r['s']))
         
         return reaches
 

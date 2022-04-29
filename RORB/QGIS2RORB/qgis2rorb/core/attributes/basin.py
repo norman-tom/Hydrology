@@ -5,6 +5,10 @@ class Basin(Node):
         super().__init__(name, x, y)
         self._area: float = km2
         self._fi: float = fi
+        self._type = 0
+        """
+        Identify that this is a basin
+        """
 
     def __str__(self):
         return "Name: {}\n[{}, {}]\nArea: {}".format(self._name, self._x, self._y, self._area)    
