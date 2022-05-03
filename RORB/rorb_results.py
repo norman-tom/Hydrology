@@ -13,12 +13,15 @@ from unittest import skip
 import pandas as pd
 import seaborn as sns
 import matplotlib.pyplot as plt
+import os
+
+dirname = os.path.dirname(__file__)
 
 def main():
     #read the batch file, extract results data and convert to a CSV
     file = ''
     csv_table = []
-    p = list(Path('./_output/').glob('*_batch.out'))
+    p = list(Path(os.path.join(dirname, '_output')).glob('*_batch.out'))
     if len(p) == 1:
         file = p[0]
     if len(p) > 1:
@@ -26,7 +29,7 @@ def main():
         print(p)
         file = p[int(input('select batch file index\n'))]
     else:
-        print('no batch file found, existing...')
+        input('no batch file found, exiting...')
         exit(1)
     with file.open('r') as f:
         flag = 0
