@@ -9,7 +9,6 @@ The script is to be placed in the '../_output' RORB file.
 
 from pathlib import Path
 import re
-from unittest import skip
 import pandas as pd
 import seaborn as sns
 import matplotlib.pyplot as plt
@@ -24,7 +23,7 @@ def main():
     p = list(Path(os.path.join(dirname, '_output')).glob('*_batch.out'))
     if len(p) == 1:
         file = p[0]
-    if len(p) > 1:
+    elif len(p) > 1:
         print('multiple batch files')
         print(p)
         file = p[int(input('select batch file index\n'))]
