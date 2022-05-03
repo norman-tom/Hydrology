@@ -1,17 +1,20 @@
 import pandas as pd
 import numpy as np
 import matplotlib.pyplot as plt
-
-gauge_data_path = '../gauge_data/back_creek_wilmores_lane.csv'
-gauge_data_raw = pd.read_csv(gauge_data_path)
+import os
 
 def main():
+    dirname = os.path.dirname(__file__)
+    gauge_data_path = os.path.join(dirname, 'gundy_creek_gauge.csv')
+    gauge_data_raw = pd.read_csv(gauge_data_path, skiprows = 9)
+    col = {'#Timestamp': 'timestamp', 'Value': 'value', 'Quality Code': 'grade', 'Interpolation Type': 'interpolate' }
+    gauge_data_raw = gauge_data_raw.rename(columns=col)
     print('Begin processing...', end='\n\n')
     print(gauge_data_raw.head(), end='\n\n')        #Print a suummary
     df = gauge_data_raw.copy()                      #copy the dataframe to manipluate
     
     #Convert date time string into datatime object
-    df['timestamp'] = pd.to_datetime(df['timestamp'], format='%d/%m/%Y %H:%M')
+    df['timestamp'] = pd.to_datetime(df['timestamp'])
 
     #get a set of the years that the gauge data covers
     unique_years = np.unique(df['timestamp'].dt.year)
@@ -39,7 +42,7 @@ def main():
                                 'Value': df_r['flow'],
                                 'Year': df_r['year']
                             })
-    to_flike.to_csv('../flike/peak_data.csv', index=False)
+    to_flike.to_csv(os.path.join(dirname, 'flike_input.csv'), index=False)
 
 
 if __name__ == "__main__":
