@@ -21,34 +21,37 @@ wet_dry = 2         # was wet now is dry
 less = 3            # flood depth is less now
 more = 4            # flood depth is more now
 tolerance = 0.02    # Tolerance on head water change
+scenarios = ['1p', '2p', '5p', '1pcc', '2pcc', '5pcc']
 
 def main():
     dirname = os.path.dirname(__file__)
-    base_path = os.path.join(dirname, "./base_scenariofia01_h_Max.asc")
-    des_path = os.path.join(dirname, "./des_scenariofia01_h_Max.asc")
-    base = raster.open(base_path)
-    des = raster.open(des_path)
 
-    b = base.read(1)
-    d = des.read(1)
-    state_field = np.zeros((len(b), len(b[0])))
+    for s in scenarios:
+        base_path = os.path.join(dirname, concate_scenario(s)[0])
+        des_path = os.path.join(dirname, concate_scenario(s)[1])
+        base = raster.open(base_path)
+        des = raster.open(des_path)
 
-    for i in range(len(b)):
-        for j in range(len(b[0])):
-            state_field[i][j] = flood_state(b[i][j], d[i][j])
+        b = base.read(1)
+        d = des.read(1)
+        state_field = np.zeros((len(b), len(b[0])))
 
-    with raster.open(
-        os.path.join(dirname, './afflux.tif'),
-        'w',
-        driver='GTiff',
-        height=base.height,
-        width=base.width,
-        count=1,
-        dtype=state_field.dtype,
-        crs=base.crs,
-        transform=base.transform,
-    ) as dst:
-        dst.write(state_field, 1)
+        for i in range(len(b)):
+            for j in range(len(b[0])):
+                state_field[i][j] = flood_state(b[i][j], d[i][j])
+
+        with raster.open(
+            os.path.join(dirname, "afflux{}.tif".format(s)),
+            'w',
+            driver='GTiff',
+            height=base.height,
+            width=base.width,
+            count=1,
+            dtype=state_field.dtype,
+            crs=base.crs,
+            transform=base.transform,
+        ) as dst:
+            dst.write(state_field, 1)
 
 
 def flood_state(base_value: float, des_value: float) -> int:
@@ -66,6 +69,8 @@ def flood_state(base_value: float, des_value: float) -> int:
         return more
     raise FloodStateException
     
+def concate_scenario(s):
+    return ("base_scenario{}01_h_max.asc".format(s), "des_scenario{}01_h_max.asc".format(s))
 
 class FloodStateException(Exception):
     pass
