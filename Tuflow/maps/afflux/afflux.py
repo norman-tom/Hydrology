@@ -22,17 +22,18 @@ wet_dry = 2         # was wet now is dry
 less = 3            # flood depth is less now
 more = 4            # flood depth is more now
 tolerance = 0.02    # Tolerance on head water change
-scenarios = ['100y', '020y', '010y']
+scenarios = ['1p', '2p', '5p']
 
 def main():
     dirname = os.path.dirname(__file__)
-    land_path = os.path.join(dirname, "ACT_CRK_002_100y+120m+TP1_DEM_Z.asc")
+    land_path = os.path.join(dirname, "surface.asc")
     land = raster.open(land_path)
     l = land.read(1)
 
     for s in scenarios:
-        base_path = os.path.join(dirname, concate_scenario(s)[0])
-        des_path = os.path.join(dirname, concate_scenario(s)[1])
+        base_name, des_name = concate_scenario(s)
+        base_path = os.path.join(dirname, base_name)
+        des_path = os.path.join(dirname, des_name)
         base = raster.open(base_path)
         des = raster.open(des_path)
 
@@ -41,14 +42,12 @@ def main():
         state_field = np.zeros((len(b), len(b[0])))
         scalar_field = state_field.copy()
 
-        for i in range(len(b)):
-            for j in range(len(b[0])):
-                ret = flood_state(b[i][j], d[i][j], l[i][j])
-                state_field[i][j] = ret[0]
-                scalar_field[i][j] = ret[1]
+        for i, (bp, dp, lp) in enumerate(zip(b, d, l)):
+            for j, (bpp, dpp, lpp) in enumerate(zip(bp, dp, lp)):
+                state_field[i][j], scalar_field[i][j] = flood_state(bpp, dpp, lpp)
 
         with raster.open(
-            os.path.join(dirname, "afflux_bands{}.tif".format(s)),
+            os.path.join(dirname, f"afflux_bands{s}.tif"),
             'w',
             driver='GTiff',
             height=base.height,
@@ -77,11 +76,7 @@ def flood_state(base_value: float, des_value: float, land_value: float) -> int:
     raise FloodStateException
     
 def concate_scenario(s):
-    x = "360m"
-    if s == "100y":
-        x = "120m"
-
-    return ("ACT_CRK_002_{}+{}+TP1_h_Max_base.asc".format(s, x), "ACT_CRK_002_{}+{}+TP1_h_Max_fill.asc".format(s, x))
+    return (f"base_scenario{s}01_h_Max.asc", f"des_scenario{s}01_h_Max_3culvert_drop.asc")
 
 class FloodStateException(Exception):
     pass
